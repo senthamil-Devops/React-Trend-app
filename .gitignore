@@ -1,0 +1,24 @@
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+.terraform.lock.hcl
+
+# Terraform providers
+terraform-provider-*
+*.exe
+
+# AWS / CLI tools
+eksctl
+kubectl
+
+# Node / frontend
+node_modules/
+dist/
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
