@@ -6,9 +6,19 @@ pipeline {
   }
 
   stages {
+
     stage('Checkout') {
       steps {
-        git 'https://github.com/senthamil-Devops/React-Trend-app.git'
+        git branch: 'main', url: 'https://github.com/senthamil-Devops/React-Trend-app.git'
+      }
+    }
+
+    stage('Build React App') {
+      steps {
+        sh '''
+        npm install
+        npm run build
+        '''
       }
     }
 
@@ -21,6 +31,7 @@ pipeline {
     stage('Push Image') {
       steps {
         sh '''
+        echo $DOCKERHUB_CRED_PSW | docker login -u $DOCKERHUB_CRED_USR --password-stdin
         docker tag trend-app $DOCKERHUB_CRED_USR/trend-app:latest
         docker push $DOCKERHUB_CRED_USR/trend-app:latest
         '''
