@@ -32,8 +32,8 @@ pipeline {
       steps {
         sh '''
         echo $DOCKERHUB_CRED_PSW | docker login -u $DOCKERHUB_CRED_USR --password-stdin
-        docker tag trend-app $DOCKERHUB_CRED_USR/trend-app:latest
-        docker push $DOCKERHUB_CRED_USR/trend-app:latest
+        docker tag trend-app $DOCKERHUB_CRED_USR/trend-apps:latest
+        docker push $DOCKERHUB_CRED_USR/trend-apps:latest
         '''
       }
     }
