@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: trend-app
+  name: trend-frontend
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
-      app: trend
+      app: trend-frontend
   template:
     metadata:
       labels:
-        app: trend
+        app: trend-frontend
     spec:
       containers:
-      - name: trend
-        image: tamililan/trend-react:latest
+        - name: frontend
+          image: tamililan/trend-react:latest
           ports:
-        - containerPort: 80
+            - containerPort: 80
