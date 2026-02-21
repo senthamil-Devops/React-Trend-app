@@ -2,10 +2,12 @@ apiVersion: v1
 kind: Service
 metadata:
   name: trend-service
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-inbound-ports: "80"
 spec:
   type: LoadBalancer
   selector:
-    app: trend
+    app: trend-frontend   # Must match Deployment pod labels
   ports:
     - port: 80
       targetPort: 80
