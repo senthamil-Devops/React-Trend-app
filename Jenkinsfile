@@ -9,7 +9,7 @@ pipeline {
 
     stage('Checkout') {
       steps {
-        git branch: 'main', url: 'https://github.com/senthamil-Devops/React-Trend-apps.git'
+        git branch: 'main', url: 'https://github.com/senthamil-Devops/React-Trend-app.git'
       }
     }
 
