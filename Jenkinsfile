@@ -1,52 +1,59 @@
 pipeline {
-  agent any
+    agent any
 
-  environment {
-    DOCKERHUB_CRED = credentials('dockerhub')
-  }
-
-  stages {
-
-    stage('Checkout') {
-      steps {
-        git branch: 'main', url: 'https://github.com/senthamil-Devops/React-Trend-app.git'
-      }
+    environment {
+        DOCKERHUB_CRED = credentials('dockerhub') // your DockerHub credentials
     }
 
-    stage('Build React App') {
-      steps {
-        dir('frontend') {      // <- Go into frontend folder
-          sh '''
-          npm install
-          npm run build
-          '''
+    stages {
+
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/senthamil-Devops/React-Trend-app.git'
+            }
         }
-      }
+
+        stage('Build Docker Image') {
+            steps {
+                sh '''
+                # Build Docker image from Dockerfile
+                docker build -t trend-frontend .
+                '''
+            }
+        }
+
+        stage('Push Image') {
+            steps {
+                sh '''
+                # Login to DockerHub
+                echo $DOCKERHUB_CRED_PSW | docker login -u $DOCKERHUB_CRED_USR --password-stdin
+                # Tag and push image
+                docker tag trend-frontend $DOCKERHUB_CRED_USR/tamililan/trend-application
+                docker push $DOCKERHUB_CRED_USR/tamililan/trend-application
+                '''
+            }
+        }
+
+        stage('Deploy to EKS') {
+            steps {
+                sh '''
+                # Apply Kubernetes manifests
+                kubectl apply -f deployment.yaml
+                kubectl apply -f service.yaml
+                '''
+            }
+        }
     }
 
-    stage('Build Docker Image') {
-      steps {
-        sh 'docker build -t trend-app .'
-      }
+    post {
+        always {
+            echo 'Pipeline finished.'
+        }
+        success {
+            echo 'Deployment succeeded!'
+        }
+        failure {
+            echo 'Deployment failed!'
+        }
     }
-
-    stage('Push Image') {
-      steps {
-        sh '''
-        echo $DOCKERHUB_CRED_PSW | docker login -u $DOCKERHUB_CRED_USR --password-stdin
-        docker tag trend-app $DOCKERHUB_CRED_USR/trend-apps:latest
-        docker push $DOCKERHUB_CRED_USR/trend-apps:latest
-        '''
-      }
-    }
-
-    stage('Deploy to EKS') {
-      steps {
-        sh '''
-        kubectl apply -f deployment.yaml
-        kubectl apply -f service.yaml
-        '''
-      }
-    }
-  }
 }
