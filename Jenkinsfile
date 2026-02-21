@@ -34,13 +34,22 @@ pipeline {
             }
         }
 
-        stage('Deploy to EKS') {
-            steps {
-                sh '''
-                # Apply Kubernetes manifests
-                kubectl apply -f deployment.yaml
-                kubectl apply -f service.yaml
-                '''
+       stage('Deploy to EKS') {
+    steps {
+        withCredentials([[
+            $class: 'AmazonWebServicesCredentialsBinding',
+            accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+            secretKeyVariable: 'AWS_SECRET_ACCESS_KEY',
+            credentialsId: 'aws-tamililan'
+        ]]) {
+            sh '''
+            aws eks update-kubeconfig --region ap-south-1 --name Trend-eks-cluster
+            kubectl apply -f deployment.yaml
+            kubectl apply -f service.yaml
+            '''
+        }
+    }
+}
             }
         }
     }
