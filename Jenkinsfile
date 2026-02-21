@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_CRED = credentials('dockerhub') // your DockerHub credentials
+        DOCKERHUB_CRED = credentials('dockerhub') // DockerHub credentials
     }
 
     stages {
@@ -27,6 +27,7 @@ pipeline {
                 sh '''
                 # Login to DockerHub
                 echo $DOCKERHUB_CRED_PSW | docker login -u $DOCKERHUB_CRED_USR --password-stdin
+
                 # Tag and push image
                 docker tag trend-react $DOCKERHUB_CRED_USR/trend-react:latest
                 docker push $DOCKERHUB_CRED_USR/trend-react:latest
@@ -36,18 +37,14 @@ pipeline {
 
         stage('Deploy to EKS') {
             steps {
-                withCredentials([[
-                    $class: 'AmazonWebServicesCredentialsBinding',
-                    accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-                    secretKeyVariable: 'AWS_SECRET_ACCESS_KEY',
-                    credentialsId: 'aws-tamililan'
-                ]]) {
-                    sh '''
-                    aws eks update-kubeconfig --region ap-south-1 --name Trend-eks-cluster
-                    kubectl apply -f deployment.yaml
-                    kubectl apply -f service.yaml
-                    '''
-                }
+                sh '''
+                # Update kubeconfig using EC2 instance role
+                aws eks update-kubeconfig --region ap-south-1 --name Trend-eks-cluster
+
+                # Apply Kubernetes manifests
+                kubectl apply -f deployment.yaml
+                kubectl apply -f service.yaml
+                '''
             }
         }
     }
