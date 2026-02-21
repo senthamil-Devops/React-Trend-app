@@ -17,7 +17,7 @@ pipeline {
             steps {
                 sh '''
                 # Build Docker image from Dockerfile
-                docker build -t trend-frontend .
+                docker build -t trend-application .
                 '''
             }
         }
@@ -28,8 +28,8 @@ pipeline {
                 # Login to DockerHub
                 echo $DOCKERHUB_CRED_PSW | docker login -u $DOCKERHUB_CRED_USR --password-stdin
                 # Tag and push image
-                docker tag trend-application $DOCKERHUB_CRED_USR/tamililan/trend-react
-                docker push $DOCKERHUB_CRED_USR/tamililan/trend-react
+                docker tag trend-application $DOCKERHUB_CRED_USR/tamililan/trend-application:latest
+                docker push $DOCKERHUB_CRED_USR/tamililan/trend-application:latest
                 '''
             }
         }
