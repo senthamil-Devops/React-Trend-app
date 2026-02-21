@@ -15,10 +15,12 @@ pipeline {
 
     stage('Build React App') {
       steps {
-        sh '''
-        npm install
-        npm run build
-        '''
+        dir('frontend') {      // <- Go into frontend folder
+          sh '''
+          npm install
+          npm run build
+          '''
+        }
       }
     }
 
